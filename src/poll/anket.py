@@ -2,28 +2,27 @@ class Anket:
     def __init__(self, config):
         self.config = config
         self.length = len(config)
-        self.answers = None
-        self.scores = 0
 
     def add_answers(self, answers: list):
-        self.scores = 0
-        self.answers = answers
-        self._counter()
-        return self.scores
-
-    def get_question(self,k):
-      return self.config[k].get('text')
-
-    def _counter(self):
-        for i in range(self.length):
-            qtype = self.config[i].get('qtype')
-            qoptions =  self.config[i].get('options')
-            right_answer =  self.config[i].get('right_answer')
-            qanswer = self.answers[i]
+        scores = 0
+        for answer in answers:
+            db.insert(answer)
+            question_number = answer['questionNumber']
+            qtype = self.config[question_number].get('type')
+            right_answer = self.config[question_number].get('answer')
+            qanswer = answer['answerText']
+            print(f"Question: {self.get_question(question_number)}")
+            print(f"Type: {qtype}")
+            print(f"Right Answer: {right_answer}")
+            print(f"User Answer: {qanswer}")
             if qtype == 'closed':
-                self.scores += 1 if qanswer == 'Да' else + 0
+                scores += 1 if qanswer == right_answer else 0
             if qtype == 'multiple_choice':
                 pass
             if qtype == 'number':
                 pass
-        print(self.scores)
+        return scores
+
+    def get_question(self, k):
+        return self.config[k].get('text')
+
